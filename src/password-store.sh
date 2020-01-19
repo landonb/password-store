@@ -291,7 +291,7 @@ cmd_usage() {
 	        Insert new password. Optionally, echo the password back to the console
 	        during entry. Or, optionally, the entry may be multiline. Prompt before
 	        overwriting existing password unless forced.
-	    $PROGRAM edit pass-name
+	    $PROGRAM edit [--ext=extension,-e extension] pass-name
 	        Insert a new password or edit an existing password using ${EDITOR:-vi}.
 	    $PROGRAM generate [--no-symbols,-n] [--clip,-c] [--in-place,-i | --force,-f] pass-name [pass-length]
 	        Generate a new password of pass-length (or $GENERATED_LENGTH if unspecified) with optionally no symbols.
@@ -481,7 +481,16 @@ cmd_insert() {
 }
 
 cmd_edit() {
-	[[ $# -ne 1 ]] && die "Usage: $PROGRAM $COMMAND pass-name"
+	local opts ext='txt'
+	opts="$($GETOPT -o e: -l ext: -n "$PROGRAM" -- "$@")"
+	local err=$?
+	eval set -- "$opts"
+	while true; do case $1 in
+		-e|--ext) ext="$2"; shift 2 ;;
+		--) shift; break ;;
+	esac done
+
+	[[ $err -ne 0 || $# -ne 1 ]] && die "Usage: $PROGRAM $COMMAND [--ext=extension,-e extension] pass-name"
 
 	local path="${1%/}"
 	check_sneaky_paths "$path"
@@ -491,7 +500,7 @@ cmd_edit() {
 	set_git "$passfile"
 
 	tmpdir #Defines $SECURE_TMPDIR
-	local tmp_file="$(mktemp -u "$SECURE_TMPDIR/XXXXXX")-${path//\//-}.txt"
+	local tmp_file="$(mktemp -u "$SECURE_TMPDIR/XXXXXX")-${path//\//-}.${ext}"
 
 	local action="Add"
 	if [[ -f $passfile ]]; then
