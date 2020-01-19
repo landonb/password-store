@@ -255,17 +255,20 @@ source "$(dirname "$0")/platform/$(uname | cut -d _ -f 1 | tr '[:upper:]' '[:low
 # BEGIN subcommand functions
 #
 
+# pass version | grep '^= \+v' | /bin/sed -e 's/^= \+v//' -e 's/[^0-9a-z.]//g'
 cmd_version() {
 	cat <<-_EOF
 	============================================
 	= pass: the standard unix password manager =
 	=                                          =
-	=                  v1.7.3                  =
+	=                v1.7.4a1 †                =
 	=                                          =
 	=             Jason A. Donenfeld           =
 	=               Jason@zx2c4.com            =
 	=                                          =
 	=      http://www.passwordstore.org/       =
+	=                                          =
+	=   † github.com/landonb/password-store    =
 	============================================
 	_EOF
 }
