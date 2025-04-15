@@ -20,7 +20,11 @@ _pass_complete_entries () {
 	local i=0 item
 
 	for item in ${items[@]}; do
-		[[ $item =~ /\.[^/]*$ ]] && continue
+		# @landonb fork: Support hidden files
+		#   [[ $item =~ /\.[^/]*$ ]] && continue
+		[[ $item =~ /\.git$ ]] && continue
+		[[ $item =~ /\.gitignore$ ]] && continue
+		[[ $item =~ /\.gpg-id$ ]] && continue
 
 		# if there is a unique match, and it is a directory with one entry
 		# autocomplete the subentry as well (recursively)
@@ -29,7 +33,8 @@ _pass_complete_entries () {
 				local subitems=($(compgen -f "$item/"))
 				local filtereditems=( ) item2
 				for item2 in "${subitems[@]}"; do
-					[[ $item2 =~ /\.[^/]*$ ]] && continue
+					# @landonb fork: Support hidden files
+					#   [[ $item2 =~ /\.[^/]*$ ]] && continue
 					filtereditems+=( "$item2" )
 				done
 				if [[ ${#filtereditems[@]} -eq 1 ]]; then
